@@ -9,7 +9,7 @@ spec:
     metadata:
       annotations:
         # Cloud SQL connection
-        run.googleapis.com/cloudsql-instances: parqr-mvp:asia-northeast3:parqr-db-instance
+        run.googleapis.com/cloudsql-instances: parqr-mvp:asia-northeast1:parqr-db-instance
         # CPU allocation
         run.googleapis.com/cpu-throttling: "false"
         # Startup CPU boost
