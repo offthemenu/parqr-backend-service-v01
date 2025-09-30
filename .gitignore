@@ -129,9 +129,6 @@ Thumbs.db
 *.swo
 *~
 
-# Docker
-.dockerignore
-
 # QR Images (generated content)
 qr_images/
 
