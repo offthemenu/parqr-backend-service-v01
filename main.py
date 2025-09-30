@@ -66,7 +66,8 @@ qr_image_path = Path(__file__).parent / "qr_images"
 qr_image_path.mkdir(exist_ok=True)
 app.mount("/qr_images", StaticFiles(directory=str(qr_image_path)), name="qr_images")
 
-Base.metadata.create_all(bind=engine)
+# Tables should be created via Alembic migrations, not at startup
+# Base.metadata.create_all(bind=engine)
 
 app.include_router(health_check.router, prefix= "/api")
 app.include_router(user.router, prefix= "/api")
