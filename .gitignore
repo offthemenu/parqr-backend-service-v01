@@ -147,3 +147,4 @@ gcp-service-key.json
 # Temporary files
 tmp/
 temp/
+.a-sprint-roadmaps/

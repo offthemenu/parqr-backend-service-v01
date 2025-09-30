@@ -9,7 +9,7 @@ spec:
     metadata:
       annotations:
         # Cloud SQL connection
-        run.googleapis.com/cloudsql-instances: parqr-mvp:us-central1:parqr-db-instance
+        run.googleapis.com/cloudsql-instances: parqr-mvp:asia-northeast1:parqr-db-instance
         # CPU allocation
         run.googleapis.com/cpu-throttling: "false"
         # Startup CPU boost
@@ -19,7 +19,7 @@ spec:
       containerConcurrency: 100
       timeoutSeconds: 300
       containers:
-      - image: us-central1-docker.pkg.dev/parqr-mvp/parqr-containers/parqr-backend:latest
+      - image: asia-northeast1-docker.pkg.dev/parqr-mvp/parqr-containers/parqr-backend:latest
         ports:
         - containerPort: 8080
         env:

@@ -21,6 +21,7 @@ FROM python:3.11-slim
 # Install runtime MySQL dependencies
 RUN apt-get update && apt-get install -y \
     default-libmysqlclient-dev \
+    libmariadb3 \
     && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
