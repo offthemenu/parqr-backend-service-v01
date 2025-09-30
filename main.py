@@ -1,5 +1,6 @@
 import os
 
+# Database credentials updated - triggering redeploy
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware 
 from fastapi.staticfiles import StaticFiles
