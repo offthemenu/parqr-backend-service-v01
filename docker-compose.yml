@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.3
+    container_name: parqr-db
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: SQL-parQR-wkddusdn1!
+      MYSQL_DATABASE: parqr_db
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+volumes:
+  mysql-data:
+    driver: local
+
+# to use: docker-compose up -d
+# to stop: docker-compose down
+# do start mysql: docker exec -it parqr-db mysql -u root -p

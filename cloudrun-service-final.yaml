@@ -1,0 +1,56 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: parqr-backend
+  annotations:
+    run.googleapis.com/launch-stage: BETA
+spec:
+  template:
+    metadata:
+      annotations:
+        # Cloud SQL connection
+        run.googleapis.com/cloudsql-instances: parqr-mvp:us-central1:parqr-db-instance
+        # CPU allocation
+        run.googleapis.com/cpu-throttling: "false"
+        # Startup CPU boost
+        run.googleapis.com/startup-cpu-boost: "true"
+    spec:
+      serviceAccountName: parqr-backend-sa
+      containerConcurrency: 100
+      timeoutSeconds: 300
+      containers:
+      - image: us-central1-docker.pkg.dev/parqr-mvp/parqr-containers/parqr-backend:latest
+        ports:
+        - containerPort: 8080
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: database-url
+              key: latest
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: jwt-secret
+              key: latest
+        - name: APP_ENVIRONMENT
+          value: production
+        resources:
+          limits:
+            cpu: "1"
+            memory: "512Mi"
+          requests:
+            cpu: "0.25"
+            memory: "256Mi"
+        startupProbe:
+          httpGet:
+            path: /api/health
+            port: 8080
+          periodSeconds: 10
+          failureThreshold: 5
+        livenessProbe:
+          httpGet:
+            path: /api/health
+            port: 8080
+          periodSeconds: 30
+          timeoutSeconds: 10
