@@ -134,6 +134,7 @@ qr_images/
 
 # Alembic
 alembic/versions/__pycache__/
+alembic.cloud.ini
 
 # Deployment scripts and secrets
 deployment-vars.sh
@@ -145,3 +146,4 @@ gcp-service-key.json
 tmp/
 temp/
 .a-sprint-roadmaps/
+check_tables.py

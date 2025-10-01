@@ -9,18 +9,22 @@ import sys
 import os
 from dotenv import load_dotenv
 
-load_dotenv()  # ✅ Load from your .env file
+# this is the Alembic Config object, which provides
+# access to the values within the .ini file in use.
+config = context.config
+
+# Only load .env and override config if using default alembic.ini
+# If using a custom config file (like alembic.cloud.ini), respect its settings
+if config.config_file_name and 'alembic.cloud.ini' not in config.config_file_name:
+    load_dotenv()  # Load from your .env file
+    # Inject DATABASE_URL into alembic config
+    if os.getenv("DATABASE_URL"):
+        config.set_main_option("sqlalchemy.url", os.getenv("DATABASE_URL"))
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from app.db.base import Base
 from app.models import user, car, parking_session, chat_message, move_request, user_tier
-# this is the Alembic Config object, which provides
-# access to the values within the .ini file in use.
-config = context.config
-
-# Inject DATABASE_URL into alembic config
-config.set_main_option("sqlalchemy.url", os.getenv("DATABASE_URL"))
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
