@@ -154,7 +154,16 @@ async def create_move_request(
     db.commit()
     db.refresh(db_request)
 
-    return MoveRequestResponse.model_validate(db_request)
+    # Build response with target_user_code
+    return MoveRequestResponse(
+        id=db_request.id,
+        target_user_code=target_user.user_code,
+        license_plate=db_request.license_plate,
+        requester_info=db_request.requester_info,
+        is_read=db_request.is_read,
+        created_at=db_request.created_at,
+        read_at=db_request.viewed_at
+    )
 
 @router.put("/{request_id}/mark_read", response_model= dict)
 async def mark_move_reqeust_as_read(

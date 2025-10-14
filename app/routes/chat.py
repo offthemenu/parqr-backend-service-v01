@@ -1,13 +1,14 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session, aliased
 from sqlalchemy import or_, and_, desc, func
 from typing import List
 from app.db.base import get_db
 from app.models.user import User
 from app.models.chat_message import ChatMessage
+from app.models.move_request import MoveRequest
 from app.schemas.chat_schema import (
-    ChatMessageCreate, 
-    ChatMessageResponse, 
+    ChatMessageCreate,
+    ChatMessageResponse,
     ChatConversationResponse,
     MarkAsReadRequest,
     MOVE_CAR_REQUEST_MESSAGE
