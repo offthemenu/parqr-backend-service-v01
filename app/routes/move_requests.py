@@ -100,7 +100,7 @@ async def get_move_requests_preview(
     return MoveRequestPreview(
         target_user_code=user.user_code,
         license_plate=license_plate,
-        requests=[MoveRequestPreviewItem.from_attributes(req) for req in recent_requests],
+        requests=[MoveRequestPreviewItem.model_validate(req) for req in recent_requests],
         total_count=total_count
     )
 
@@ -256,7 +256,7 @@ async def get_move_request_history(
 
     return MoveRequestHistoryResponse(
         target_user_code=user.user_code,
-        requests=[MoveRequestHistoryItem.from_attributes(req) for req in requests],
+        requests=[MoveRequestHistoryItem.model_validate(req) for req in requests],
         total_count=total_count,
         unread_count=unread_count
     )
