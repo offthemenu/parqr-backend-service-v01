@@ -7,6 +7,7 @@ import logging
 from app.db.base import get_db
 from app.models.move_request import MoveRequest
 from app.models.user import User
+from app.models.car import Car
 from app.schemas.move_request_schema import (
     MoveRequestCreate,
     MoveRequestResponse,
@@ -133,7 +134,19 @@ async def create_move_request(
     target_user = db.query(User).filter(User.user_code == request.target_user_code).first()
     if not target_user:
         raise HTTPException(status_code=404, detail=f"User with code {request.target_user_code} not found")
-    
+
+    # Verify license plate belongs to target user
+    car = db.query(Car).filter(
+        Car.owner_id == target_user.id,
+        Car.license_plate == request.license_plate
+    ).first()
+
+    if not car:
+        raise HTTPException(
+            status_code=422,
+            detail=f"License plate {request.license_plate} does not belong to user {request.target_user_code}"
+        )
+
     # IP Address from the request
     client_ip = client_request.client.host
     if hasattr(client_request.headers, "x-forwarded-for"):
