@@ -1,11 +1,9 @@
-from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session, joinedload
 import logging
 
 from app.db.base import get_db
 from app.models.user import User
-from app.models.car import Car
 from app.models.parking_session import ParkingSession
 from app.schemas.public_profile_schema import PublicProfileResponse
 
@@ -81,6 +79,52 @@ async def get_public_profile(
         public_message=public_message
     )
 
+@router.get("/active_sessions/{user_code}", response_model=list)
+async def get_public_active_sessions(
+    user_code: str,
+    db: Session = Depends(get_db)
+) -> list:
+    """
+    Get active parking sessions for user.
+
+    This endpoint returns currently active parking sessions (sessions without end_time)
+    for the specified user. Used to display active parking information including
+    public messages on the public profile page.
+
+    Args:
+        user_code: 8-character user code
+        db: Database session
+
+    Returns:
+        List of active parking session data with public information
+
+    Raises:
+        HTTPException: 404 if user not found
+    """
+    logger.info(f"Getting active parking sessions for user_code: {user_code}")
+
+    user = db.query(User).filter(User.user_code == user_code).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    # Get active parking sessions (where end_time is NULL)
+    active_sessions = db.query(ParkingSession).filter(
+        ParkingSession.user_id == user.id,
+        ParkingSession.end_time.is_(None)
+    ).order_by(ParkingSession.start_time.desc()).all()
+
+    session_data = []
+    for session in active_sessions:
+        session_data.append({
+            "id": session.id,
+            "start_time": session.start_time,
+            "public_message": session.public_message
+        })
+
+    logger.info(f"Returning {len(session_data)} active parking sessions")
+
+    return session_data
+
 @router.get("/parking_history/{user_code}", response_model=list)
 async def get_public_parking_history(
     user_code: str,
@@ -89,15 +133,15 @@ async def get_public_parking_history(
 ) -> list:
     """
     Get public parking history for user (optional feature).
-    
+
     This endpoint could provide insights into parking patterns
     without revealing sensitive information.
-    
+
     Args:
         user_code: 8-character user code
         limit: Number of recent sessions to return
         db: Database session
-    
+
     Returns:
         List of anonymized parking session data
     """
@@ -106,7 +150,7 @@ async def get_public_parking_history(
     user = db.query(User).filter(User.user_code == user_code).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
-    
+
     # Return anonymized parking data without location info
     recent_sessions = db.query(ParkingSession).filter(
         ParkingSession.user_id == user.id,
@@ -121,7 +165,7 @@ async def get_public_parking_history(
             "end_time": session.end_time,
             "public_message": session.public_message
         })
-    
+
     logger.info(f"Returning {len(anonymized_sessions)} public parking sessions")
 
     return anonymized_sessions
